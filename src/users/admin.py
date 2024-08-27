@@ -10,7 +10,7 @@ from users.models import User, UserRole
 
 @admin.register(User)
 class UserAdmin(ModelAdmin):
-    list_display = ("id", "email", "first_name", "last_name")
+    list_display = ("uuid", "email", "first_name", "last_name")
     search_fields = ("email", "first_name", "last_name")
 
 
