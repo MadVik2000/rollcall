@@ -2,6 +2,8 @@
 This file contains all the models for users module.
 """
 
+from uuid import uuid4
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -31,6 +33,7 @@ class User(AbstractUser):
     """
 
     username = None
+    uuid = models.UUIDField(default=uuid4, primary_key=True)
     email = models.EmailField(max_length=256, unique=True)
     first_name = models.CharField(max_length=256)
     last_name = models.CharField(max_length=256, null=True, blank=True)
