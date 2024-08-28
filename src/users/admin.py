@@ -16,6 +16,8 @@ class UserAdmin(ModelAdmin):
 
 @admin.register(UserRole)
 class UserRoleAdmin(ModelAdmin):
-    list_display = ("id", "user", "role")
+    list_display = ("user", "role")
     search_fields = ("user__email",)
+    list_select_related = ("user",)
     list_filter = ("role",)
+    autocomplete_fields = ("user",)
