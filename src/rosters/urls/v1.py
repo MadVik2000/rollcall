@@ -7,5 +7,6 @@ from django.urls import path
 from rosters.apis.v1 import rosters
 
 urlpatterns = [
-    path("", rosters.CreateRosterAPI.as_view(), name="roster-list"),
+    path("", rosters.CreateRosterAPI.as_view(), name="roster-create"),
+    path("list/", rosters.ListRosterAPI.as_view(), name="roster-list"),
 ]
