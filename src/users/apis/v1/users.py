@@ -2,17 +2,17 @@
 This file contains all the APIs related to users module.
 """
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
+from rest_framework.permissions import AllowAny
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from utils.helpers import generate_user_token
 from utils.response import DefaultResponse
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class UserLoginAPI(APIView):
     """
@@ -29,7 +29,6 @@ class UserLoginAPI(APIView):
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
         password = serializers.CharField()
-
 
     def post(self, request, *args, **kwargs):
         serializer = self.InputSerializer(data=request.data)
