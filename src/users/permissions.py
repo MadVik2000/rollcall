@@ -13,7 +13,7 @@ class IsManager(IsAuthenticated):
             super().has_permission(request, view)
             and request.user
             and request.user.userrole_set.filter(
-                role=UserRole.Role.MANAGER, date_deleted__isnull=False
+                role=UserRole.Role.MANAGER, date_deleted__isnull=True
             ).exists()
         )
 
@@ -24,6 +24,6 @@ class IsStaffMember(IsAuthenticated):
             super().has_permission(request, view)
             and request.user
             and request.user.userrole_set.filter(
-                role=UserRole.Role.STAFF_MEMBER, date_deleted__isnull=False
+                role=UserRole.Role.STAFF_MEMBER, date_deleted__isnull=True
             ).exists()
         )
