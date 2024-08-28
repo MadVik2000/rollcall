@@ -5,8 +5,7 @@ This file contains all the APIs related to rosters model.
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_400_BAD_REQUEST)
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from rosters.models import Roster, RosterManager
