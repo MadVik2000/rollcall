@@ -54,7 +54,7 @@ class RosterManager(BaseModel):
         if not UserRole.objects.filter(
             user_id=self.manager.uuid,
             role=UserRole.Role.MANAGER,
-            date_deleted__isnull=False,
+            date_deleted__isnull=True,
         ).exists():
             raise ValidationError(
                 "Only users with managers role can be added as a roster manager"
@@ -94,7 +94,7 @@ class RosterUserSchedule(BaseModel):
         if not UserRole.objects.filter(
             user_id=self.user.uuid,
             role=UserRole.Role.STAFF,
-            date_deleted__isnull=False,
+            date_deleted__isnull=True,
         ).exists():
             raise ValidationError(
                 "Schedule can be added for users with staff role only."
