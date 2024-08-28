@@ -143,8 +143,8 @@ class Migration(migrations.Migration):
                 ("date_updated", models.DateTimeField(auto_now=True)),
                 ("date_deleted", models.DateTimeField(blank=True, null=True)),
                 ("schedule_date", models.DateField()),
-                ("start_time", models.TimeField()),
-                ("end_time", models.TimeField()),
+                ("start_time", models.DateTimeField()),
+                ("end_time", models.DateTimeField()),
                 (
                     "created_by",
                     models.ForeignKey(
