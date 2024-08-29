@@ -15,7 +15,7 @@ from rosters.models import RosterUserSchedule
 from utils.files import RenameFile, ValidateFileSize
 from utils.models import BaseModel
 
-FILE_STORAGE = FileSystemStorage(location=settings.BASE_DIR)
+FILE_STORAGE = FileSystemStorage(location=settings.MEDIA_ROOT)
 
 
 class Attendance(BaseModel):
@@ -31,8 +31,7 @@ class Attendance(BaseModel):
     )
     capture_image = models.ImageField(
         storage=FILE_STORAGE,
-        upload_to=RenameFile(
-            "files/attendance/{instance.roster_user_schedule.user_id}/{instance.date_created}.{extension}"
+        upload_to=RenameFile("files/attendance/{instance.roster_user_schedule.user_id}/{instance.date_created}.{extension}"
         ),
         validators=[
             ValidateFileSize(max_file_size=MAX_FILE_SIZE),
@@ -63,4 +62,4 @@ class Attendance(BaseModel):
 
     def full_clean(self, *args, **kwargs):
         self.validate_time()
-        return self.full_clean(*args, **kwargs)
+        return super().full_clean(*args, **kwargs)
