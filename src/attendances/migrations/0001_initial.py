@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "rosters",
-            "0002_remove_rosteruserschedule_roster_user_schedule_date_unique_constraint_and_more",
+            "0001_initial",
         ),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
