@@ -193,4 +193,86 @@ class Migration(migrations.Migration):
                 ],
             },
         ),
+        migrations.CreateModel(
+            name="ScheduleSwapRequest",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "date_created",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("date_updated", models.DateTimeField(auto_now=True)),
+                ("date_deleted", models.DateTimeField(blank=True, null=True)),
+                (
+                    "status",
+                    models.PositiveSmallIntegerField(
+                        choices=[(1, "Pending"), (2, "Accepted"), (3, "Rejected")],
+                        default=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_created_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "receiver",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="receiver",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "sender",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sender",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "sender_schedule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rosters.rosteruserschedule",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_updated_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={
+                "verbose_name": "Schedule Swap Request",
+                "verbose_name_plural": "Schedule Swap Requests",
+                "constraints": [
+                    models.UniqueConstraint(
+                        condition=models.Q(("date_deleted__isnull", True)),
+                        fields=("sender", "receiver", "sender_schedule"),
+                        name="sender_receiver_sender_schedule_unique_constraint",
+                        violation_error_message="A swap request already exists.",
+                    )
+                ],
+            },
+        ),
     ]
