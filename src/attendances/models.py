@@ -2,7 +2,10 @@
 This file contains all the models related to attendances module.
 """
 
+from datetime import timedelta
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -44,3 +47,17 @@ class Attendance(BaseModel):
     class Meta:
         verbose_name = "Attendance"
         verbose_name_plural = "Attendances"
+
+    def validate_time(self):
+        if not (
+            self.roster_user_schedule.start_time - timedelta(hours=1)
+            <= self.time
+            <= self.roster_user_schedule.start_time + timedelta(hours=1)
+        ):
+            raise ValidationError(
+                "Attendance can only be marked within one hour of the schedule start time."
+            )
+
+    def full_clean(self, *args, **kwargs):
+        self.validate_time()
+        return self.full_clean(*args, **kwargs)

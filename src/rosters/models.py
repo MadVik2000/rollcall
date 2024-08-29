@@ -2,6 +2,8 @@
 This file contains all the models related to rosters module.
 """
 
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -114,6 +116,9 @@ class RosterUserSchedule(BaseModel):
 
         if self.schedule_date != self.start_time.date():
             raise ValidationError("Schedule date and start time date should be same")
+
+        if self.end_time - self.start_time < timedelta(hours=6):
+            raise ValidationError("A schedule must be atleast 6 hours long.")
 
     def clean(self) -> None:
         self.validate_time_fields()
