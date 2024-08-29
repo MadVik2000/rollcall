@@ -18,12 +18,12 @@ class IsManager(IsAuthenticated):
         )
 
 
-class IsStaffMember(IsAuthenticated):
+class IsStaff(IsAuthenticated):
     def has_permission(self, request, view):
         return (
             super().has_permission(request, view)
             and request.user
             and request.user.userrole_set.filter(
-                role=UserRole.Role.STAFF_MEMBER, date_deleted__isnull=True
+                role=UserRole.Role.STAFF, date_deleted__isnull=True
             ).exists()
         )
