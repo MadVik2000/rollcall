@@ -11,7 +11,12 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.utils.timezone import now
 
-from rosters.models import Roster, RosterManager, RosterUserSchedule
+from rosters.models import (
+    Roster,
+    RosterManager,
+    RosterUserSchedule,
+    ScheduleSwapRequest,
+)
 from users.models import UserRole
 
 User = get_user_model()
@@ -122,3 +127,34 @@ def bulk_create_roster_user_schedule(
         return False, str(error)
 
     return True, roster_user_schedules
+
+
+def create_schedule_swap_request(
+    sender: Union[UUID, User],  # type: ignore
+    receiver: Union[UUID, User],  # type: ignore
+    status: ScheduleSwapRequest.Status,
+    sender_schedule: Union[RosterUserSchedule, int],
+    created_by: Optional[User] = None,  # type: ignore
+) -> Tuple[bool, Union[str, ScheduleSwapRequest]]:
+    """
+    This service is used to create a schedule swap request instance.
+    """
+
+    schedule_swap_request = ScheduleSwapRequest(
+        sender=sender.uuid if isinstance(sender, User) else sender,
+        receiver=receiver.uuid if isinstance(receiver, User) else receiver,
+        status=status,
+        sender_schedule=(
+            sender_schedule.id
+            if isinstance(sender_schedule, RosterUserSchedule)
+            else sender_schedule
+        ),
+        created_by=created_by,
+    )
+
+    try:
+        schedule_swap_request.save()
+    except ValidationError as error:
+        return False, str(error)
+
+    return True, schedule_swap_request

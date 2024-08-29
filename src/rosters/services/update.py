@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from rosters.models import RosterUserSchedule
+from rosters.models import RosterUserSchedule, ScheduleSwapRequest
 
 User = get_user_model()
 
@@ -55,3 +55,24 @@ def update_roster_user_schedule(
         return False, str(error)
 
     return True, roster_user_schedule
+
+
+def update_schedule_swap_request(
+    schedule_swap_request: ScheduleSwapRequest,
+    status: ScheduleSwapRequest.Status,
+    date_deleted: Optional[datetime] = None,
+) -> Tuple[bool, Union[str, ScheduleSwapRequest]]:
+    """
+    This service is used to update a schedule swap request instance.
+    """
+
+    schedule_swap_request.status = status
+    if date_deleted:
+        schedule_swap_request.date_deleted = date_deleted
+
+    try:
+        schedule_swap_request.save()
+    except ValidationError as error:
+        return False, str(error)
+
+    return True, schedule_swap_request
