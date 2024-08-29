@@ -8,6 +8,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
+from users.models import UserRole
+from users.permissions import IsManager
+from users.serializers import UserSerializer
 from utils.helpers import generate_user_token
 from utils.response import DefaultResponse
 
@@ -46,4 +49,29 @@ class UserLoginAPI(APIView):
 
         return DefaultResponse(
             data={"access_token": generate_user_token(user=user)}, status=HTTP_200_OK
+        )
+
+
+class ListStaffUserAPI(APIView):
+    """
+    This API is used to list all the available staff users.
+    Response Codes:
+        200
+    """
+
+    permission_classes = (IsManager,)
+
+    OutputSerializer = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(
+            uuid__in=UserRole.objects.filter(role=UserRole.Role.STAFF).values_list(
+                "user_id", flat=True
+            )
+        )
+
+    def get(self, request, *args, **kwargs):
+        return DefaultResponse(
+            data=self.OutputSerializer(instance=self.get_queryset(), many=True).data,
+            status=HTTP_200_OK,
         )
