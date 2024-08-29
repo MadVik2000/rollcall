@@ -72,6 +72,8 @@ class UserRole(BaseModel):
         verbose_name_plural = "User Roles"
         constraints = [
             models.UniqueConstraint(
-                fields=("user", "role"), name="user_role_unique_constraint"
+                fields=("user", "role"),
+                name="user_role_unique_constraint",
+                violation_error_message="User with this role already exists",
             )
         ]

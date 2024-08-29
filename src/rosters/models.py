@@ -47,6 +47,7 @@ class RosterManager(BaseModel):
             models.UniqueConstraint(
                 fields=["roster", "manager"],
                 name="roster_manager_unique_constraint",
+                violation_error_message="User is already manager for this roster.",
             )
         ]
 
@@ -87,6 +88,7 @@ class RosterUserSchedule(BaseModel):
                 fields=["roster", "user", "schedule_date"],
                 name="roster_user_schedule_date_unique_constraint",
                 condition=models.Q(date_deleted__isnull=True),
+                violation_error_message="Staff user can only have one active schedule on a day.",
             )
         ]
 
