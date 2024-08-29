@@ -15,6 +15,11 @@ urlpatterns = [
         name="schedule-create",
     ),
     path(
+        "schedule/<int:user_schedule_id>/",
+        roster_user_schedules.UpdateRosterUserScheduleAPI.as_view(),
+        name="schedule-create",
+    ),
+    path(
         "<int:roster_id>/schedule/list/",
         roster_user_schedules.ListRosterUserScheduleAPI.as_view(),
         name="schedule-list",

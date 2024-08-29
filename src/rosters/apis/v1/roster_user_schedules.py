@@ -3,12 +3,21 @@ This file contains all the APIs related to roster user schedules model.
 """
 
 from rest_framework import serializers
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_202_ACCEPTED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+)
 from rest_framework.views import APIView
 
 from rosters.models import Roster, RosterManager, RosterUserSchedule
 from rosters.serializers import RosterUserScheduleSerializer
-from rosters.services import bulk_create_roster_user_schedule
+from rosters.services import (
+    bulk_create_roster_user_schedule,
+    update_roster_user_schedule,
+)
 from users.models import UserRole
 from users.permissions import IsManager, IsStaff
 from utils.response import DefaultResponse
@@ -81,6 +90,67 @@ class BulkCreateRosterUserScheduleAPI(APIView):
         return DefaultResponse(
             data=self.OutputSerializer(instance=user_schedules, many=True).data,
             status=HTTP_201_CREATED,
+        )
+
+
+class UpdateRosterUserScheduleAPI(APIView):
+    """
+    This API is used to update a user schedule.
+    Response Code:
+        200, 400, 404
+    """
+
+    permission_classes = (IsManager,)
+
+    class InputSerializer(serializers.Serializer):
+        schedule_date = serializers.DateField()
+        start_time = serializers.DateTimeField()
+        end_time = serializers.DateTimeField()
+
+        def validate(self, attrs):
+            if attrs["start_time"] >= attrs["end_time"]:
+                raise serializers.ValidationError(
+                    "End time must be greater than start time"
+                )
+
+            return super().validate(attrs)
+
+    OutputSerializer = RosterUserScheduleSerializer
+
+    def get_queryset(self, manager, user_schedule_id):
+        return RosterUserSchedule.objects.filter(
+            date_deleted__isnull=True,
+            id=user_schedule_id,
+            roster__rostermanager__manager=manager,
+        )
+
+    def put(self, request, user_schedule_id, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        if not serializer.is_valid():
+            return DefaultResponse(
+                errors=serializer.errors, status=HTTP_400_BAD_REQUEST
+            )
+
+        user_schedule = self.get_queryset(
+            manager=request.user, user_schedule_id=user_schedule_id
+        ).first()
+        if not user_schedule:
+            return DefaultResponse(
+                errors="No User Schedule Found", status=HTTP_404_NOT_FOUND
+            )
+
+        success, user_schedule = update_roster_user_schedule(
+            roster_user_schedule=user_schedule,
+            updated_by=request.user,
+            **serializer.validated_data
+        )
+
+        if not success:
+            return DefaultResponse(errors=user_schedule, status=HTTP_400_BAD_REQUEST)
+
+        return DefaultResponse(
+            data=self.OutputSerializer(instance=user_schedule).data,
+            status=HTTP_202_ACCEPTED,
         )
 
 
