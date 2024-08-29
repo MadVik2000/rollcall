@@ -3,13 +3,14 @@ This file contains all the APIs related to roster user schedules model.
 """
 
 from rest_framework import serializers
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from rosters.models import Roster, RosterManager
+from rosters.models import Roster, RosterManager, RosterUserSchedule
 from rosters.serializers import RosterUserScheduleSerializer
 from rosters.services import bulk_create_roster_user_schedule
-from users.permissions import IsManager
+from users.models import UserRole
+from users.permissions import IsManager, IsStaff
 from utils.response import DefaultResponse
 
 
@@ -80,4 +81,34 @@ class BulkCreateRosterUserScheduleAPI(APIView):
         return DefaultResponse(
             data=self.OutputSerializer(instance=user_schedules, many=True).data,
             status=HTTP_201_CREATED,
+        )
+
+
+class ListRosterUserScheduleAPI(APIView):
+    """
+    This API is used to list all the user schedules associated with a roster.
+    In case a staff user accesses this API, he/she would only be able to access
+    their own schedule(s) list.
+
+    Response Codes:
+        200
+    """
+
+    permission_classes = (IsManager | IsStaff,)
+
+    OutputSerializer = RosterUserScheduleSerializer
+
+    def get_queryset(self, roster_id):
+        return RosterUserSchedule.objects.filter(
+            date_deleted__isnull=True, roster_id=roster_id
+        )
+
+    def get(self, request, roster_id, *args, **kwargs):
+        user_schedules = self.get_queryset(roster_id=roster_id)
+        if not request.user.userrole_set.filter(role=UserRole.Role.MANAGER).exists():
+            user_schedules = user_schedules.filter(user=request.user)
+
+        return DefaultResponse(
+            data=self.OutputSerializer(instance=user_schedules, many=True).data,
+            status=HTTP_200_OK,
         )
