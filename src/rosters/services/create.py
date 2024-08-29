@@ -65,7 +65,7 @@ def create_roster_manager(
 
 def bulk_create_roster_user_schedule(
     roster: Roster,
-    data: List[RosterUserScheduleData],
+    user_schedule_data: List[RosterUserScheduleData],
     created_by: Optional[User] = None,  # type: ignore
 ) -> Tuple[bool, Union[str, List[RosterUserSchedule]]]:
     """
@@ -81,7 +81,7 @@ def bulk_create_roster_user_schedule(
             if isinstance(roster_user_schedule["user"], User)
             else roster_user_schedule["user"]
         )
-        for roster_user_schedule in data
+        for roster_user_schedule in user_schedule_data
     }
 
     if (
@@ -97,7 +97,7 @@ def bulk_create_roster_user_schedule(
     roster_user_schedules = []
 
     try:
-        for roster_user_schedule_data in data:
+        for roster_user_schedule_data in user_schedule_data:
             roster_user_schedule = RosterUserSchedule(
                 roster_id=roster.id,
                 user_id=(
