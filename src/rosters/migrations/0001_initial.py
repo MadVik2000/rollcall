@@ -188,8 +188,8 @@ class Migration(migrations.Migration):
                         condition=models.Q(("date_deleted__isnull", True)),
                         fields=("roster", "user", "schedule_date"),
                         name="roster_user_schedule_date_unique_constraint",
-                        violation_error_message="User is already manager for this roster.",
-                    )
+                        violation_error_message="Staff user can only have one active schedule on a day.",
+                    ),
                 ],
             },
         ),
