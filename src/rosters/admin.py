@@ -1,5 +1,5 @@
 """
-This file contains all the admins for rosters module
+This file contains all the model admin configurations for rosters module
 """
 
 from django.contrib import admin

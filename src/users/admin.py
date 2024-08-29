@@ -1,5 +1,5 @@
 """
-This file contains all the admin configurations for users module
+This file contains all the model admin configurations for users module
 """
 
 from django.contrib import admin
