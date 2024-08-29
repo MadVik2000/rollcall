@@ -132,8 +132,8 @@ def bulk_create_roster_user_schedule(
 def create_schedule_swap_request(
     sender: Union[UUID, User],  # type: ignore
     receiver: Union[UUID, User],  # type: ignore
-    status: ScheduleSwapRequest.Status,
-    sender_schedule: Union[RosterUserSchedule, int],
+    schedule: Union[RosterUserSchedule, int],
+    status: Optional[ScheduleSwapRequest.Status] = ScheduleSwapRequest.Status.PENDING,
     created_by: Optional[User] = None,  # type: ignore
 ) -> Tuple[bool, Union[str, ScheduleSwapRequest]]:
     """
@@ -141,13 +141,11 @@ def create_schedule_swap_request(
     """
 
     schedule_swap_request = ScheduleSwapRequest(
-        sender=sender.uuid if isinstance(sender, User) else sender,
-        receiver=receiver.uuid if isinstance(receiver, User) else receiver,
+        sender_id=sender.uuid if isinstance(sender, User) else sender,
+        receiver_id=receiver.uuid if isinstance(receiver, User) else receiver,
         status=status,
-        sender_schedule=(
-            sender_schedule.id
-            if isinstance(sender_schedule, RosterUserSchedule)
-            else sender_schedule
+        sender_schedule_id=(
+            schedule.id if isinstance(schedule, RosterUserSchedule) else schedule
         ),
         created_by=created_by,
     )
