@@ -48,6 +48,9 @@ class Attendance(BaseModel):
         verbose_name = "Attendance"
         verbose_name_plural = "Attendances"
 
+    def __str__(self):
+        return f"{self.roster_user_schedule}"
+
     def validate_time(self):
         if not (
             self.roster_user_schedule.start_time - timedelta(hours=1)
